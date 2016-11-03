@@ -1,0 +1,259 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\setlength{\parindent}{0cm}
+\usepackage{setspace}
+\usepackage{mathpazo}
+\usepackage{graphicx}
+\usepackage{wasysym} 
+\usepackage{booktabs}
+\usepackage{verbatim}
+\usepackage{microtype}
+\usepackage{siunitx}
+\usepackage{cleveref}
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+\usepackage{paralist}
+\usepackage{pst-all}
+\usepackage{pstricks}
+\usepackage{pst-node}
+\usepackage{tikz}
+\usepackage{tkz-berge}
+\usetikzlibrary{trees,petri,decorations,arrows,automata,shapes,shadows,positioning,plotmarks}
+\usepackage[a4paper,
+left=3.0cm, right=3.0cm,
+top=2.0cm, bottom=2.0cm]{geometry}
+\usepackage{fullpage}
+\usepackage[german]{babel}
+%\usepackage{pst-all}
+%\usepackage{pstricks}
+\setlength{\unitlength}{1cm}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\usepackage{mathpazo}
+
+\author{Linxi Wang, Ya Qian}
+\title{Machine Learning}
+\begin{document}
+\begin{center}
+\Large{\textsc{Machine Learning: Exercise 1}} \\
+\end{center}
+
+\begin{tabbing}
+Linxi Wang \hspace{0.9cm}\= 587032\\
+Lusine Nazaretyan \hspace{0.9cm}\= ......\\
+Thomas Herold \hspace{0.9cm}\= ......\\ 
+Ya Qian\>  518902
+\end{tabbing}
+
+\subsection*{Exercise 1}
+\subsubsection*{a)}
+\begin{align}
+	P(error) &= \int P(error\mid x)p(x) dx \label{eq1} \\
+	P(error\mid x) &= \min (P(w_1\mid x), P(w_2\mid x)) \label{eq2}
+\end{align}
+
+With these equations, we want to show that
+
+\begin{align}
+	P(error) \le \int \frac{2}{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}} p(x) dx \label{eq3}
+\end{align}
+
+we assume that $P(w_1 \mid x) \ge P(w_2 \mid x) \label{ass1}$, that is the function $P(error \mid x) = P(w_2 \mid x)$. Now with $(1)$, $(2)$ and $(3)$ we have:
+
+\begin{align*}
+	\int P(w_2 \mid x)p(x) dx \le \int \frac{2}{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}} p(x) dx
+\end{align*}
+
+Because both sides are integrating over the same variable we can simplify the term to:
+%\begin{align*}
+%	&P(w_2 \mid x)p(x) \le \frac{2}{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}} p(x) \\
+%	&\Leftrightarrow \frac{1}{P(w_2 \mid x)p(x)} \ge \frac{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}}{2} p(x) \\
+%	&\Leftrightarrow \frac{1}{P(w_2 \mid x)} \ge \frac{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}}{2} \\
+%	&\Leftrightarrow \frac{2}{P(w_2 \mid x)} \ge \frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}  \\
+%	&\Leftrightarrow \frac{1}{P(w_2 \mid x)} \ge \frac{1}{P(w_1\mid x)} \\
+%	&\Leftrightarrow P(w_2 \mid x) \le P(w_1\mid x)
+
+\begin{align*}	
+	&P(w_2 \mid x)p(x) \le \frac{2}{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}} p(x) \\
+	&\Leftrightarrow P(w_2 \mid x) \le \frac{2}{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}} \\
+	&\Leftrightarrow \frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)} \le \frac{2}{P(w_2 \mid x)} \\
+	&\Leftrightarrow \frac{1}{P(w_1 \mid x)} \le \frac{1}{P(w_2\mid x)} \\
+	&\Leftrightarrow P(w_1 \mid x) \ge P(w_2\mid x)
+\end{align*}
+
+This holds true with the assumptions \ref{ass1} we made earlier.
+
+\subsubsection*{b)}
+
+With this result, we now show that:
+
+\begin{align*}
+P(error) \le \frac{2P(w_1)P(w_2)}{\sqrt{P(w_1)^2 + (4\mu^2 + 2)P(w_1)P(w_2) + P(w_2)^2}}
+\end{align*}
+
+While using the univariate probability distribution:
+$$p(x\mid w_1) = \frac{\pi^{-1}}{1+ (x - \mu)^2} \textrm{ and } p(x \mid w_2) = \frac{\pi^{-1}}{1 + (x + \mu)^2}$$
+
+With the rule of bayes we have $P(w_1 \mid x) = \frac{p(x \mid w_1)P(w_1)}{p(x)}$:
+
+\begin{align*}
+	P(error) &\le \int \frac{2}{\frac{1}{P(w_1\mid x)} + \frac{1}{P(w_2 \mid x)}} p(x) dx \\
+	\Leftrightarrow P(error) &\le \int \frac{2}{\frac{1}{ \frac{p(x \mid w_1)P(w_1)}{p(x)} } + \frac{1}{\frac{p(x \mid w_2)P(w_2)}{p(x)}}} p(x) dx \\
+	\Leftrightarrow P(error) &\le \int \frac{2}{\frac{p(x)}{p(x \mid w_1)P(w_1)} + \frac{p(x)}{p(x \mid w_2)P(w_2)}} p(x) dx \\
+	\Leftrightarrow P(error) &\le \int \frac{2}{\frac{1}{p(x \mid w_1)P(w_1)} + \frac{1}{p(x \mid w_2)P(w_2)}}dx \\
+	\Leftrightarrow P(error) &\le \int \frac{2}{\frac{1}{ \frac{\pi^{-1}}{1+ (x - \mu)^2} P(w_1)} + \frac{1}{ \frac{\pi^{-1}}{1 + (x + \mu)^2} P(w_2)}}dx \\
+	\Leftrightarrow P(error) &\le \int \frac{2}{\frac{1}{ \frac{\pi^{-1} P(w_1)}{1+ (x - \mu)^2}} + \frac{1}{ \frac{\pi^{-1} P(w_2)}{1 + (x + \mu)^2}}}dx \\
+	\Leftrightarrow P(error) &\le \int \frac{2}{\frac{1+ (x - \mu)^2}{\pi^{-1} P(w_1)} +  \frac{1 + (x + \mu)^2}{\pi^{-1} P(w_2)}}dx \\
+		\Leftrightarrow P(error) &\le \int \frac{2}{\frac{(1+ (x - \mu)^2) P(w_2)}{\pi^{-1} P(w_1) P(w_2)} +  \frac{(1 + (x + \mu)^2) P(w_1)}{\pi^{-1} P(w_2) P(w_1)}}dx \\
+		\Leftrightarrow P(error) &\le \int \frac{2 \pi^{-1} P(w_2) P(w_1)}{(1+ (x + \mu)^2) P(w_1) + (1 + (x - \mu)^2) P(w_2)}dx \\
+		\Leftrightarrow P(error) &\le \int \frac{2 \pi^{-1} P(w_2) P(w_1)}{(x^2 + 2x\mu +\mu^2 +1) P(w_1) + (x^2 - 2x\mu +\mu^2 +1) P(w_2)}dx \\
+		\Leftrightarrow P(error) &\le \int \frac{2 \pi^{-1} P(w_2) P(w_1)}{(P(w_1)+P(w_2))x^2 + (P(w_1)-P(w_2))2\mu x + (P(w_1)\mu^2 + P(w_2)\mu^2+P(w1)+P(w_2))}dx \\
+\end{align*}
+
+We can now take out the numerator of the integral and use the following equation:
+
+\begin{align}
+\int \frac{1}{ax^2+bx+c}dx = \frac{2\pi}{\sqrt{4ac-b^2}}
+\end{align}
+
+with:
+
+\begin{align*}
+a &= P(w_1)+P(w_2) \\
+b &= (P(w_1)-P(w_2))2\mu \\
+c &= P(w_1)\mu^2 + P(w_2)\mu^2+P(w1)+P(w_2) \\
+\end{align*}
+
+because
+
+\begin{align*}
+    b^2 &< 4ac \\
+    \Leftrightarrow 0 &< 4ac-b^2 \\
+    \Leftrightarrow 0 &< 4(P(w_1)+P(w_2))(P(w_1)\mu^2 + P(w_2)\mu^2+P(w1)+P(w_2))-((P(w_1)-P(w_2))2\mu)^2 \\
+    \Leftrightarrow 0 &< 4P(w_1)^2\mu^2 + 4P(w_1)P(w_2)\mu^2+4P(w_1)^2+4P(w_1)P(w_2) \\
+    &+ 4P(w_1)P(w_2)\mu^2+4P(w_2)^2\mu^2+ 4P(w_2)P(w_1)+4P(w_2)^2 \\
+    &- (4P(w_1)^2\mu^2-8P(w_1)P(w_2)\mu^2+4P(w_2)^2\mu^2) \\
+    \Leftrightarrow 0 &< 16P(w_1)P(w_2)\mu^2+8P(w_1)P(w_2)+4P(w_1)^2+4P(w_2)^2 \\
+\end{align*}
+
+and this holds since $P(w_1), P(w_2) \in [0,1]$ and $P(w_1) + P(w_2) = 1$.\\
+We now already calculated $4ac-b^2$ in the steps before and just need to use $(4)$ to proceed where we stopped before introducing equation 4:
+
+\begin{align*}
+    \Leftrightarrow P(error) &\le \int \frac{2 \pi^{-1} P(w_2) P(w_1)}{(P(w_1)+P(w_2))x^2 + (P(w_1)-P(w_2))2\mu x + (P(w_1)\mu^2 + P(w_2)\mu^2+P(w1)+P(w_2))}dx \\
+    \Leftrightarrow P(error) &\le 2 \pi^{-1} P(w_2) P(w_1) \frac{2\pi}{\sqrt{16P(w_1)P(w_2)\mu^2+8P(w_1)P(w_2)+4P(w_1)^2+4P(w_2)^2}} \\
+    \Leftrightarrow P(error) &\le \frac{4 P(w_1) P(w_2) }{\sqrt{4((4\mu^2+2)P(w_1)P(w_2)+P(w_1)^2+P(w_2)^2)}} \\
+    \Leftrightarrow P(error) &\le \frac{4 P(w_1) P(w_2) }{\sqrt{4}\sqrt{((4\mu^2+2)P(w_1)P(w_2)+P(w_1)^2+P(w_2)^2)}} \\
+    \Leftrightarrow P(error) &\le \frac{2 P(w_1) P(w_2) }{\sqrt{P(w_1)^2+(4\mu^2+2)P(w_1)P(w_2)+P(w_2)^2}} \\
+\end{align*}
+
+\subsubsection*{c)}
+According to informations form chapter 2.8 in Pattern Classification:
+
+For both cases we can find the upper-bound numericaly via the Chernoff Bound or the Bhattacharyya Bound, this may lead to a tighter upper bound than the analytical version, which is even harder to approximate due to the discontinues nature of the integrals. For the high-dimensional space the Bhattacharyya Bound might be better, because it is computationally less expensive than the Chernoff Bound.
+
+Besides from that, it's possible to compute an approximation if we have a data-set that is large (in terms of datapoints, not dimensions) enough to contain the class characteristics. We could use for example nested cross validation to compute and evaluate multiple classifiers with different parameters and then take the mean error (on the test set) as the approximation. This is especially practical for low dimensional data but becomes computationally expensive if the number of dimensions grows, because the number of possible decision boundaries grows and the need of data to cover the classes characteristics even grows exponentially.
+
+For high dimensional data one could try to estimate the prior by analyzing the dataset and use the smaller prior as an approximation of the error. But this would rather be the highest error a classifier should have, since only picking the class with the higher prior should yield the approximated error rate. So this would almost always be a poor approximation for the bayes error, but at least give a lower bound of the error that a classifier should produce.
+
+\subsection*{Exercise 2}
+\subsubsection*{a)}
+The data is generated by the univariate Laplacian Distrubution:
+$$p(x\mid w_1) = \frac{1}{2\sigma}\exp\left(-\frac{\mid x - \mu \mid}{\sigma}\right) \textrm{ and } p(x\mid w_2) = \frac{1}{2\sigma}\exp\left(-\frac{\mid x + \mu \mid}{\sigma}\right)$$
+To get the optimal decision boundary we have to solve $P(w_1\mid x) = P(w_2 \mid x)$ for x.
+\begin{align*}
+&& P(w_1 \mid x) &= P(w_2 \mid x) \\
+&\Leftrightarrow &\frac{p(x \mid w_1)P(w_1)}{p(x)} &= \frac{p(x \mid w_2)P(w_2)}{p(x)} \\
+&\Leftrightarrow &p(x\mid w_1)P(w_1) &= p(x \mid w_2)P(w_2) \\
+&\Leftrightarrow &\frac{1}{2\sigma}\exp\left(-\frac{\mid x - \mu \mid}{\sigma}\right)P(w_1) &= \frac{1}{2\sigma}\exp\left(-\frac{\mid x + \mu \mid}{\sigma}\right)P(w_2) \\
+&\Leftrightarrow &\exp\left(-\frac{\mid x - \mu \mid}{\sigma}\right)P(w_1) &= \exp\left(-\frac{\mid x + \mu \mid}{\sigma}\right)P(w_2) \\
+&\Leftrightarrow &\ln(\exp\left(-\frac{\mid x - \mu \mid}{\sigma}\right)P(w_1)) &= \ln(\exp\left(-\frac{\mid x + \mu \mid}{\sigma}\right)P(w_2)) \\
+&\Leftrightarrow &-\frac{\mid x - \mu \mid}{\sigma} + \ln(P(w_1)) &= -\frac{\mid x + \mu \mid}{\sigma} + \ln(P(w_2)) \\
+&\Leftrightarrow & \ln(P(w_1)) - \ln(P(w_2)) &= \frac{\mid x - \mu \mid}{\sigma} - \frac{\mid x + \mu \mid}{\sigma} \\
+&\Leftrightarrow & \ln\left(\frac{P(w_1)}{P(w_2)}\right) &= \frac{\mid x - \mu \mid - \mid x + \mu \mid}{\sigma} \\
+&\Leftrightarrow & \sigma\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= \mid x - \mu \mid - \mid x + \mu \mid
+\end{align*}
+There are now 4 cases to look at:
+\begin{enumerate}
+	\item $x < \mu$ and $-x < \mu$ \\
+		\begin{align*}
+			\sigma\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= -(x - \mu) - (x + \mu ) \\
+			&= -2x \\
+			- \frac{\sigma}{2}\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= x
+		\end{align*}
+	\item $x > \mu$ and $-x > \mu$ \\
+		\begin{align*}
+			\sigma\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= x - \mu + x + \mu \\
+			&= 2x \\
+			\frac{\sigma}{2}\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= x
+		\end{align*}		
+		
+	\item $x \le \mu$ and $-x \geq \mu$ \\
+		\begin{align*}
+			\sigma\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= -(x - \mu) + x + \mu \\
+			&= 2\mu
+		\end{align*}
+	\item $x \geq \mu$ and $-x \le \mu$ \\
+		\begin{align*}
+			\sigma\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= (x - \mu) - (x + \mu ) \\
+			&= -2\mu
+		\end{align*}
+\end{enumerate}
+
+Equations $(3)$ and $(4)$ tell us, that the boundary must lie between the mean of both classes (there is no boundary for the range of $x$ outside of that). The first equation gives us the boundary if we have $\mu > 0$ and the second one if we have $\mu < 0$.
+
+\subsubsection*{b)}
+To satisfy the constrain of $P(w_2 \mid x) = P(error \mid x)$ for all $x$, $w_1$ and $w_2$ must have the same density functions and thus
+\begin{align*}
+    P(x \mid w_1) = P(x \mid w_2)
+\end{align*}
+Visually it would mean that the area of the curve of $P(x \mid w_2)$ is completly included inside the area of the curve of $P(x \mid w_1)$.
+When varying the mean $\mu$, both curves move away from each other, which means it always has to stay 0, else it's not possible to satisfy the constraint. The scale $\sigma$ can take any value that is larger than zero, since it has the same effect on both distributions. $P(w_1)$ must always be larger than $P(w_2)$ (or else $P(w_1 \mid x) \le P(w_2 \mid x)$ for some $x$ and so $P(error \mid x) \not = P(w_2 \mid x)$ for some $x$):
+
+\begin{align*}
+P(error \mid x) &= P(w_2 \mid x)\\
+\Leftrightarrow P(w_2 \mid x) &= min[P(w_1 \mid x),P(w_2 \mid x)] \\
+\Leftrightarrow P(w_2 \mid x) &< P(w_1 \mid x) \\
+\Leftrightarrow \frac{P(x \mid w_2)P(w_2)}{P(x)} &< \frac{P(x \mid w_1)P(w_1)}{P(x)} \\
+\Leftrightarrow P(x \mid w_2)P(w_2) &< P(x \mid w_1)P(w_1) \\
+\Leftrightarrow P(w_2) &< P(w_1) \\
+\end{align*}
+
+Formally all possible value-tuples are:
+
+$$\{ (P(w_1), P(w_2), \mu, \sigma) \mid P(w_1) > P(w_2) \land \mu = 0 \land \sigma \in \R^+ \}$$
+
+\subsubsection*{c)}
+The data is generated by the univariate Gaussian Distrubution:
+$$p(x\mid w_1) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right) \textrm{ and } p(x\mid w_2) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x + \mu)^2}{2\sigma^2}\right)$$
+To get the optimal decision boundary we have to solve $P(w_1\mid x) = P(w_2 \mid x)$ for x.
+\begin{align*}
+&& P(w_1 \mid x) &= P(w_2 \mid x) \\
+&\Leftrightarrow &\frac{p(x \mid w_1)P(w_1)}{p(x)} &= \frac{p(x \mid w_2)P(w_2)}{p(x)} \\
+&\Leftrightarrow &\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)P(w_1) &= \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x + \mu)^2}{2\sigma^2}\right)P(w_2) \\
+&\Leftrightarrow &\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)P(w_1) &= \exp\left(-\frac{(x + \mu)^2}{2\sigma^2}\right)P(w_2) \\
+&\Leftrightarrow &-\frac{(x - \mu)^2}{2\sigma^2} + \ln\left(P(w_1)\right) &= -\frac{(x + \mu)^2}{2\sigma^2} + \ln\left(P(w_2)\right) \\
+&\Leftrightarrow &\ln\left(\frac{P(w_1)}{P(w_2}\right) &= \frac{(x - \mu)^2 - (x + \mu)^2}{2\sigma^2}\\
+&\Leftrightarrow &2\sigma^2\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= x^2 - 2x\mu + \mu^2 - x^2 - 2x\mu - \mu^2 \\
+&\Leftrightarrow &2\sigma^2\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= -4x\mu \\
+&\Leftrightarrow &\frac{2\sigma^2}{-4\mu}\ln\left(\frac{P(w_1)}{P(w_2)}\right) &= x
+\end{align*}
+
+These are the optimal decision boundaries under the restriction that $\mu \not = 0$, which leads us to the second part of the exercise.
+
+Just as in case of the Laplacian distribution, the mean $\mu$ has to be zero and $P(w_1)$ has to be larger than $P(w_2)$ in order that $P(error \mid x) = P(w_2 \mid x)$ for all $x$. Again we can obtain these possible value tuples:
+
+$$\{ (P(w_1), P(w_2), \mu, \sigma) \mid P(w_1) > P(w_2) \land \mu = 0 \land \sigma \in \R^+ \}$$
+
+
+
+
+
+
+
+
+\end{document}
