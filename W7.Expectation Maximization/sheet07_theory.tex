@@ -1,0 +1,192 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\setlength{\parindent}{0cm}
+\usepackage{setspace}
+\usepackage{mathpazo}
+\usepackage{graphicx}
+\usepackage{wasysym} 
+\usepackage{booktabs}
+\usepackage{enumerate}
+\usepackage{verbatim}
+\usepackage{microtype}
+\usepackage{siunitx}
+\usepackage{cleveref}
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+\usepackage{paralist}
+\usepackage{pst-all}
+\usepackage{pstricks}
+\usepackage{pst-node}
+\usepackage{tikz}
+\usepackage{tkz-berge}
+\usetikzlibrary{trees,petri,decorations,arrows,automata,shapes,shadows,positioning,plotmarks}
+\usepackage[a4paper,
+left=3.0cm, right=3.0cm,
+top=2.0cm, bottom=2.0cm]{geometry}
+\usepackage{fullpage}
+\usepackage[german]{babel}
+%\usepackage{pst-all}
+%\usepackage{pstricks}
+\setlength{\unitlength}{1cm}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\tr}{\text{tr}}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\usepackage{mathpazo}
+
+\author{Linxi Wang}
+\title{Machine Learning}
+\begin{document}
+\begin{center}
+\Large{\textsc{Machine Learning 1: Assignment 7}} \\
+\end{center}
+
+\begin{tabbing}
+Linxi Wang \hspace{0.9cm}\= 587032\\
+Lusine Nazaretyan \hspace{0.9cm}\= 513624\\
+Thomas Herold \hspace{0.9cm}\= 535025\\ 
+Ya Qian \hspace{0.9cm}\= 518902\\ 
+Karen Nazaretyan\>  .......
+\end{tabbing}
+
+
+\section{Discrete EM, coin tosses from multiple distributions}
+
+Since we want to find the parameter $\theta=(\lambda,p_1,p_2)$ that maximizes \begin{equation*}
+Q(\theta,\theta^{old})=\sum_{z\in \{heads,tails\}^N}\underbrace{P(Z=z|X=x,\theta^{old})}_{=q(z)}  \underbrace{\log(P(X=x,Z=z|\theta))}_{=F(z,\theta)},
+\end{equation*}
+%all we have to do is to rewrite $Q$ in terms of $\theta$ and then set the derivatives of $Q$ with respect to each component of $\theta$ to zero.
+The factor $P(Z=z|X=x,\theta^{old})$ does not depend on $\theta$ and will therefore remain unchanged under differentiation.
+
+Therefore, we only have to care about the function $F(z,\theta)$ for now.
+
+Let: 
+
+$H(v)\equiv$ number of heads in $v$
+
+$T(v)\equiv$ number of tails in $v$
+ 
+for any vector $v$ (including scalars).
+
+We can obtain:
+\begin{align*}
+F(z,\theta)&=\log(P(X=x,Z=z|\theta))\\
+&=\log( \prod_{i=1}^N P(Z=z^{(i)}|\theta) \prod_{j=1}^m P(X_j=x_j^{(i)}|Z=z^{(i)},\theta)) \\
+&=\sum_{i=1}^N \log (P(Z=z^{(i)}|\theta)) + \sum_{j=1}^m \log (P(X_j=x_j^{(i)}|Z=z^{(i)},\theta)).
+\end{align*}
+
+With our prior knowledge, we can now rewrite
+\begin{align*}
+&P(Z=z^{(i)}|\theta)=\lambda^{H(z^{(i)})}(1-\lambda)^{T(z^{(i)})}\\
+\text{and } & P(X_j=x_j^{(i)}|Z=z^{(i)},\theta)= \bigl( p_1^{H(x_j^{(i)})} (1-p_1)^{T(x_j^{(i)})}\bigr)^{H(z^{(i)})} \bigl(  p_2^{H(x_j^{(i)})} (1-p_2)^{T(x_j^{(i)})} \bigr)^{T(z^{(i)})}.
+\end{align*}
+
+If we insert this into the equation above, we get:
+
+\begin{align*}
+F(z,\theta)&=\sum_{i=1}^N \log (\lambda^{H(z^{(i)})}(1-\lambda)^{T(z^{(i)})})\\
+& + \sum_{j=1}^m \log \Bigl(\bigl( p_1^{H(x_j^{(i)})} (1-p_1)^{T(x_j^{(i)})}\bigr)^{H(z^{(i)})} \bigl(  p_2^{H(x_j^{(i)})} (1-p_2)^{T(x_j^{(i)})} \bigr)^{T(z^{(i)})} \Bigr)\\
+&=\sum_{i=1}^N H(z^{(i)})\log (\lambda)+ T(z^{(i)}) \log (1-\lambda) +\sum_{j=1}^m  H(x_j^{(i)}) H(z^{(i)}) \log(p_1)\\
+& + T(x_j^{(i)}) H(z^{(i)})\log(1-p_1) + H(x_j^{(i)})T(z^{(i)}) \log(p_2)+ T(x_j^{(i)})T(z^{(i)}) \log (1-p_2).
+\end{align*}
+
+\subsection*{Parameter $\hat \lambda$}
+We now want to derive an expression for $\hat \lambda$ and therefore we set the derivative of $Q$ w.r.t. $\lambda$ to zero:
+\begin{equation}\label{derQlambda}
+\frac{dQ(\theta,\theta_{old})}{d\lambda}=\sum_{z\in \{T,H\}^N} q(z) \frac{dF(z,\theta)}{d\lambda} \stackrel{!}{=}0.
+\end{equation}
+So we see that we have to compute the derivative of $F(z,\theta)$ w.r.t. $\lambda$.
+
+\begin{align*}
+\frac{dF(z,\theta)}{d\lambda} &=\frac{d}{d\lambda}\sum_{i=1}^N H(z^{(i)})\log (\lambda)+ T(z^{(i)}) \log (1-\lambda)\\
+&=\frac{d}{d\lambda}\log (\lambda)\sum_{i=1}^N H(z^{(i)})+  \frac{d}{d\lambda}\log (1-\lambda)\sum_{i=1}^N T(z^{(i)})\\
+&= \frac{H(z)}{\lambda} - \frac{T(z)}{1-\lambda}\\
+&=\frac{(1-\lambda)H(z)-\lambda T(z)}{\lambda(1-\lambda)}\\
+& \stackrel{T(z)=N-H(z)}{=}\frac{H(z)-\lambda N}{\lambda(1-\lambda)}
+\end{align*}
+
+We can now insert this result into equation \ref{derQlambda}:
+\begin{align*}
+\sum_{z\in \{T,H\}^N} q(z) \frac{dF(z,\theta)}{d\lambda} &=0\\
+\Leftrightarrow \sum_{z\in \{T,H\}^N} q(z) \frac{H(z)-\lambda N}{\lambda(1-\lambda)} &=0\\
+\Leftrightarrow \sum_{z\in \{T,H\}^N} q(z) \frac{H(z)}{\lambda(1-\lambda)} &= \sum_{z\in \{T,H\}^N} q(z) \frac{\lambda N}{\lambda(1-\lambda)}\\
+\Leftrightarrow \sum_{z\in \{T,H\}^N} q(z) H(z) &= \lambda N \sum_{z\in \{T,H\}^N} q(z) \\
+\Leftrightarrow \frac{\sum_{z\in \{T,H\}^N} q(z) H(z)}{N \sum_{z\in \{T,H\}^N} q(z)} &= \lambda\\
+\end{align*}
+Since $q(z)$ represents a probability distribution, we know that $\sum_{z\in \{T,H\}^N} q(z)=1$ and therefore we obtain
+\begin{equation*}
+\hat \lambda = \frac{\sum_{z\in \{T,H\}^N} q(z) H(z)}{N}.
+\end{equation*}
+
+\subsection*{Parameter $\hat p_1$}
+
+We now want to derive an expression for $\hat p_1$ and therefore we set the derivative of $Q$ w.r.t. $p_1$ to zero:
+\begin{equation}\label{derQp1}
+\frac{dQ(\theta,\theta_{old})}{d p_1}=\sum_{z\in \{T,H\}^N} q(z) \frac{dF(z,\theta)}{d p_1} \stackrel{!}{=}0.
+\end{equation}
+So we see that we have to compute the derivative of $F(z,\theta)$ w.r.t. $p_1$.
+
+\begin{align*}
+\frac{dF(z,\theta)}{d p_1} &= \frac{d}{d p_1} \Bigl ( \sum_{i=1}^N \sum_{j=1}^m  H(x_j^{(i)}) H(z^{(i)}) \log(p_1) + T(x_j^{(i)}) H(z^{(i)})\log(1-p_1) \Bigr )\\
+&= \frac{d}{d p_1} \log(p_1) \sum_{i=1}^N  H(z^{(i)})\sum_{j=1}^m  H(x_j^{(i)})  + \frac{d}{d p_1} \log(1-p_1) \sum_{i=1}^N H(z^{(i)}) \sum_{j=1}^m T(x_j^{(i)}) \\
+&= \frac{1}{p_1} \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)}) - \frac{1}{1-p_1} \sum_{i=1}^N H(z^{(i)}) T(x^{(i)}) \\
+&\stackrel{T(x^{(i)})=m-H(x^{(i)})}{=} \frac{1}{p_1} \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)}) - \frac{1}{1-p_1} \sum_{i=1}^N m H(z^{(i)}) + \frac{1}{1-p_1} \sum_{i=1}^N H(x^{(i)})H(z^{(i)}) \\
+&=\frac{1}{p_1(1-p_1)} \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)}) - \frac{m}{1-p_1} H(z).
+\end{align*}
+
+We can now insert this expression into equation \ref{derQp1}:
+\begin{align*}
+\sum_{z\in \{T,H\}^N} q(z) \frac{dF(z,\theta)}{d p_1} &=0\\
+\Leftrightarrow \sum_{z\in \{T,H\}^N} q(z)\Bigl ( \frac{1}{p_1(1-p_1)} \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)}) - \frac{m}{1-p_1} H(z) \Bigr) &=0\\
+\Leftrightarrow \sum_{z\in \{T,H\}^N} q(z) \frac{1}{p_1(1-p_1)} \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)}) &=\sum_{z\in \{T,H\}^N} q(z) \frac{m}{1-p_1} H(z)\\
+\Leftrightarrow \sum_{z\in \{T,H\}^N} q(z) \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)}) &=m \cdot p_1 \sum_{z\in \{T,H\}^N} q(z) H(z)
+\end{align*}
+ 
+ and therefore we get:
+ \begin{align*}
+ \hat p_1 &=\frac{ \sum_{z\in \{T,H\}^N} q(z) \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)})}{m\sum_{z\in \{T,H\}^N} q(z) H(z)}\\
+ &=\frac{ \sum_{z\in \{T,H\}^N} q(z) \sum_{i=1}^N  H(z^{(i)}) H(x^{(i)})}{m \cdot N  \cdot \hat \lambda}.
+ \end{align*}
+
+\subsection*{Parameter $\hat p_2$}
+
+In order to determine an explicit expression for $\hat p_2$, we proceed analogously to the case of $\hat p_1$.
+
+We set the derivative of $Q$ w.r.t. $p_2$ to zero:
+\begin{equation}\label{derQp2}
+\frac{dQ(\theta,\theta_{old})}{d p_2}=\sum_{z\in \{T,H\}^N} q(z) \frac{dF(z,\theta)}{d p_2} \stackrel{!}{=}0
+\end{equation}
+and compute the derivative of $F(z,\theta)$ w.r.t. $p_2$:
+
+\begin{align*}
+\frac{dF(z,\theta)}{d p_2} &= \frac{d}{d p_2} \Bigl ( \sum_{i=1}^N \sum_{j=1}^m  H(x_j^{(i)})T(z^{(i)}) \log(p_2)+ T(x_j^{(i)})T(z^{(i)}) \log (1-p_2) \Bigr )\\
+&= \frac{d}{d p_2} \log(p_2)\sum_{i=1}^N \sum_{j=1}^m  H(x_j^{(i)})T(z^{(i)}) +  \frac{d}{d p_2} \log (1-p_2) \sum_{i=1}^N \sum_{j=1}^m T(x_j^{(i)})T(z^{(i)})  \\
+&= \frac{1}{p_2}\sum_{i=1}^N  H(x^{(i)})T(z^{(i)}) -  \frac{1}{1- p_2}\sum_{i=1}^N  T(x^{(i)})T(z^{(i)})  \\
+&\stackrel{T(x^{(i)})=m-H(x^{(i)})}{=} \frac{1}{p_2}\sum_{i=1}^N  H(x^{(i)})T(z^{(i)}) -  \frac{1}{1- p_2}\sum_{i=1}^N  m T(z^{(i)}) + \frac{1}{1- p_2}\sum_{i=1}^N H(x^{(i)})T(z^{(i)}) \\
+&= \frac{1}{p_2(1-p_2)}\sum_{i=1}^N  H(x^{(i)})T(z^{(i)}) -  \frac{m}{1- p_2} T(z).
+\end{align*}
+
+We can now insert this into equation \ref{derQp2} and obtain:
+
+\begin{align*}
+\sum_{z\in \{T,H\}^N} q(z) \frac{dF(z,\theta)}{d p_2} &=0\\
+\Leftrightarrow \sum_{z\in \{T,H\}^N} q(z)\Bigl ( \frac{1}{p_2(1-p_2)}\sum_{i=1}^N  H(x^{(i)})T(z^{(i)}) -  \frac{m}{1- p_2} T(z) \Bigr) &=0\\
+\Leftrightarrow  \sum_{z\in \{T,H\}^N} q(z)\frac{1}{p_2(1-p_2)}\sum_{i=1}^N  H(x^{(i)})T(z^{(i)}) &=  \sum_{z\in \{T,H\}^N} q(z) \frac{m}{1- p_2} T(z)\\
+\Leftrightarrow  \sum_{z\in \{T,H\}^N} q(z)\sum_{i=1}^N  H(x^{(i)})T(z^{(i)}) &=  m \cdot p_2\sum_{z\in \{T,H\}^N} q(z) T(z).
+\end{align*}
+
+This yields:
+
+\begin{equation*}
+\hat p_2 = \frac{\sum_{z\in \{T,H\}^N} q(z)\sum_{i=1}^N  H(x^{(i)})T(z^{(i)})}{m \sum_{z\in \{T,H\}^N} q(z) T(z)}
+\end{equation*}
+
+%\begin{thebibliograpy}
+%	\bibitem{DHS2000} R. O. Duda, P. E. Hart and D. G. Stork. \emph{Pattern Classification}. 2nd ed. New York, NY, USA: Wiley-Interscience, 2000. ISBN: 0-4710-5669-3
+%\end{thebibliograpy}
+
+\end{document}
